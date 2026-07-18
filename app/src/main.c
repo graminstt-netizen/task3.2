@@ -9,7 +9,7 @@ main.c - главный модуль программы.
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-    // Вывод логов строго на английском
+    // Логи строго на английском
     printf("BigNum Calculator started\n");
 
     if (argc < 3) {
@@ -21,32 +21,40 @@ int main(int argc, char *argv[]) {
     BigNum num1 = GetBigNumByStr(argv[1], &size1);
     BigNum num2 = GetBigNumByStr(argv[2], &size2);
 
-    // Размер результата при сложении может быть на 1 элемент больше максимального
-    size_t resSize = (size1 > size2 ? size1 : size2) + 1;
-    BigNum res = AllocBigNum(resSize);
-
-    // Выполняем сложение
-    AddBigNum(num1, num2, res, size1, size2);
-
     printf("First number:  ");
     PrintBigNum(num1, size1);
 
     printf("Second number: ");
     PrintBigNum(num2, size2);
 
-    // Если самый старший разряд остался нулевым (переноса не было),
-    // уменьшаем размер для красивого вывода без ведущего нуля
-    if (resSize > 1 && BitsArrayGet(res, (unsigned int)(resSize - 1)) == 0) {
-        resSize--;
+    // --- 1. Сложение ---
+    size_t addResSize = (size1 > size2 ? size1 : size2) + 1;
+    BigNum addRes = AllocBigNum(addResSize);
+    AddBigNum(num1, num2, addRes, size1, size2);
+
+    if (addResSize > 1 && BitsArrayGet(addRes, (unsigned int)(addResSize - 1)) == 0) {
+        addResSize--;
     }
-
     printf("Sum:           ");
-    PrintBigNum(res, resSize);
+    PrintBigNum(addRes, addResSize);
 
-    // Очищаем память
+    // --- 2. Вычитание ---
+    size_t subResSize = size1; // Размер равен размеру первого (большего) числа
+    BigNum subRes = AllocBigNum(subResSize);
+    SubBigNum(num1, num2, subRes, size1, size2);
+
+    // Убираем ведущие нули в разности для красивого вывода
+    while (subResSize > 1 && BitsArrayGet(subRes, (unsigned int)(subResSize - 1)) == 0) {
+        subResSize--;
+    }
+    printf("Difference:    ");
+    PrintBigNum(subRes, subResSize);
+
+    // Очищаем всю выделенную память
     free(num1);
     free(num2);
-    free(res);
+    free(addRes);
+    free(subRes);
 
     return 0;
 }

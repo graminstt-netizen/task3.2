@@ -52,4 +52,8 @@ void PrintBigNum(IN BigNum bigNum, size_t bigNumSize);
 // Сложение двух больших чисел, результат записывается в res
 void AddBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigNum1Size, size_t bigNum2Size);
 
+// Вычитание двух больших чисел (res = bigNum1 - bigNum2). 
+// Предполагается, что bigNum1 >= bigNum2
+void SubBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigNum1Size, size_t bigNum2Size);
+
 #endif // LIB_MAIN_H

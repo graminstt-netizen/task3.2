@@ -230,3 +230,50 @@ void AddBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigN
         BitsArraySet(res, (unsigned int)maxSize, carry);
     }
 }
+
+void SubBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigNum1Size, size_t bigNum2Size) {
+    if (bigNum1 == NULL || bigNum2 == NULL || res == NULL) {
+        return;
+    }
+
+    BitsArrayMaxType borrow = 0; // Заем из старшего разряда
+    size_t maxSize = bigNum1Size; // Размер результата равен размеру уменьшаемого
+
+    for (size_t i = 0; i < maxSize; i++) {
+        BitsArrayMaxType val1 = BitsArrayGet(bigNum1, (unsigned int)i);
+        BitsArrayMaxType val2 = (i < bigNum2Size) ? BitsArrayGet(bigNum2, (unsigned int)i) : 0;
+        
+        BitsArrayMaxType diff = 0;
+        BitsArrayMaxType next_borrow = 0;
+
+        if (N == 64) {
+            // Для N = 64 используем особенности беззнакового переполнения в C
+            BitsArrayMaxType term2 = val2 + borrow;
+            
+            // Заем происходит, если произошло переполнение при сложении val2 + borrow
+            // или если уменьшаемое меньше того, что мы вычитаем
+            if (term2 < val2 || val1 < term2) {
+                next_borrow = 1;
+            }
+            diff = val1 - term2;
+            borrow = next_borrow;
+        } else {
+            // Для N < 64 вычисляем заем явно
+            BitsArrayMaxType mask = ((BitsArrayMaxType)1 << N) - 1;
+            BitsArrayMaxType term2 = val2 + borrow;
+            
+            if (val1 < term2) {
+                next_borrow = 1;
+                // Прибавляем основание системы счисления (2^N) к уменьшаемому
+                diff = (val1 + ((BitsArrayMaxType)1 << N)) - term2;
+            } else {
+                next_borrow = 0;
+                diff = val1 - term2;
+            }
+            diff &= mask; // Обрезаем до N бит
+            borrow = next_borrow;
+        }
+
+        BitsArraySet(res, (unsigned int)i, diff);
+    }
+}
