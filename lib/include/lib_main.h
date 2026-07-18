@@ -11,16 +11,36 @@ main.c - главный модуль программы.
 
 #include <stdlib.h>
 
-// Определение типов
+// Тип слова битового массива 
 typedef unsigned int BitsArrayElementType;
+
+// Битовый массив представляется массивом слов
 typedef BitsArrayElementType *BitsArray;
+
+// Тип, в который поместится любой N-битный кусочек (до 64 бит включительно)
 typedef unsigned long long BitsArrayMaxType;
+
+// Большое число — это тот же битовый массив
 typedef BitsArray BigNum;
 
+// Размер элементов большого числа (может быть 4, 8, 16, 32, 64)
 #define N   32
 
 #define IN
 #define OUT
 
+// Прототипы функций работы с битовым массивом
+
+// Вычисляет размер одного слова (ячейки) в битах
+size_t GetWordBitCount(void);
+
+// Выделяет память для хранения большого числа, состоящего из bigNumSize элементов по N бит
+BigNum AllocBigNum(size_t bigNumSize);
+
+// Возвращает i-ый N-битный элемент из битового массива
+BitsArrayMaxType BitsArrayGet(BitsArray bitsArray, unsigned int i);
+
+// Помещает i-ый N-битный элемент в битовый массив
+void BitsArraySet(BitsArray bitsArray, unsigned int i, BitsArrayMaxType value);
 
 #endif // LIB_MAIN_H
