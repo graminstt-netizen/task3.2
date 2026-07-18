@@ -183,3 +183,50 @@ void PrintBigNum(IN BigNum bigNum, size_t bigNumSize) {
     }
     printf("\n");
 }
+
+void AddBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigNum1Size, size_t bigNum2Size) {
+    if (bigNum1 == NULL || bigNum2 == NULL || res == NULL) {
+        return;
+    }
+
+    size_t maxSize = (bigNum1Size > bigNum2Size) ? bigNum1Size : bigNum2Size;
+    BitsArrayMaxType carry = 0; // Перенос в следующий разряд
+
+    for (size_t i = 0; i < maxSize; i++) {
+        // Если одно из чисел короче другого, недостающие разряды считаем нулями
+        BitsArrayMaxType val1 = (i < bigNum1Size) ? BitsArrayGet(bigNum1, (unsigned int)i) : 0;
+        BitsArrayMaxType val2 = (i < bigNum2Size) ? BitsArrayGet(bigNum2, (unsigned int)i) : 0;
+        
+        BitsArrayMaxType sum = 0;
+        
+        if (N == 64) {
+            // Особый случай для N=64, чтобы избежать переполнения unsigned long long в C
+            sum = val1 + val2;
+            BitsArrayMaxType next_carry = 0;
+            
+            if (sum < val1) {
+                next_carry = 1; // Произошло переполнение при сложении val1 и val2
+            }
+            
+            sum += carry;
+            if (sum < carry) {
+                next_carry = 1; // Произошло переполнение при добавлении предыдущего переноса
+            }
+            
+            carry = next_carry;
+        } else {
+            // Для N < 64 всё проще: мы можем безопасно складывать в более широком типе
+            BitsArrayMaxType mask = ((BitsArrayMaxType)1 << N) - 1;
+            sum = val1 + val2 + carry;
+            carry = sum >> N; // Всё, что вышло за пределы N бит, уходит в перенос
+            sum &= mask;      // Обрезаем результат до N бит
+        }
+        
+        BitsArraySet(res, (unsigned int)i, sum);
+    }
+    
+    // Если после сложения всех разрядов остался перенос, записываем его в самый старший разряд
+    if (carry > 0) {
+        BitsArraySet(res, (unsigned int)maxSize, carry);
+    }
+}
