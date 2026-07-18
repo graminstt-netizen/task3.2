@@ -43,4 +43,10 @@ BitsArrayMaxType BitsArrayGet(BitsArray bitsArray, unsigned int i);
 // Помещает i-ый N-битный элемент в битовый массив
 void BitsArraySet(BitsArray bitsArray, unsigned int i, BitsArrayMaxType value);
 
+// Инициализирует большое число из строки шестнадцатеричных символов
+BigNum GetBigNumByStr(IN const char *str, OUT size_t *bigNumSize);
+
+// Выводит большое число в консоль в шестнадцатеричном формате
+void PrintBigNum(IN BigNum bigNum, size_t bigNumSize);
+
 #endif // LIB_MAIN_H

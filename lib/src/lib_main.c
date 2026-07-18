@@ -7,6 +7,8 @@ main.c - главный модуль программы.
 
 
 #include "lib_main.h"
+#include <string.h>
+#include <stdio.h>
 
 // Функция возвращает размер одного слова BitsArrayElementType в битах (обычно 8, 16, 32 или 64)
 size_t GetWordBitCount(void) {
@@ -98,4 +100,86 @@ void BitsArraySet(BitsArray bitsArray, unsigned int i, BitsArrayMaxType value) {
         
         bitsWritten += bitsToOverwrite;
     }
+}
+
+// Вспомогательная функция перевода hex-символа в число
+static unsigned char HexCharToVal(char c) {
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    return 0;
+}
+
+// Инициализирует большое число из строки
+BigNum GetBigNumByStr(IN const char *str, OUT size_t *bigNumSize) {
+    if (str == NULL || bigNumSize == NULL) {
+        return NULL;
+    }
+
+    size_t len = strlen(str);
+    if (len == 0) {
+        *bigNumSize = 1;
+        return AllocBigNum(1);
+    }
+
+    // Каждый hex-символ — это 4 бита. Вычисляем количество N-битных элементов
+    size_t totalBits = len * 4;
+    *bigNumSize = (totalBits + N - 1) / N;
+
+    BigNum res = AllocBigNum(*bigNumSize);
+
+    // Читаем строку с конца (справа налево — от младших разрядов к старшим)
+    for (size_t i = 0; i < len; i++) {
+        char c = str[len - 1 - i];
+        unsigned char val = HexCharToVal(c);
+
+        size_t bitPos = i * 4; // Смещение в битах от начала числа
+        size_t elemIdx = bitPos / N;
+        size_t shift = bitPos % N;
+
+        // Читаем то, что уже успели записать в этот элемент, и подмешиваем новые 4 бита
+        BitsArrayMaxType currentElem = BitsArrayGet(res, (unsigned int)elemIdx);
+        currentElem |= ((BitsArrayMaxType)val << shift);
+        
+        BitsArraySet(res, (unsigned int)elemIdx, currentElem);
+    }
+
+    return res;
+}
+
+// Выводит число на экран
+void PrintBigNum(IN BigNum bigNum, size_t bigNumSize) {
+    if (bigNum == NULL || bigNumSize == 0) {
+        printf("0\n");
+        return;
+    }
+
+    // Печатаем элементы со старшего (последнего в массиве) к младшему (нулевому)
+    size_t printedAnything = 0;
+
+    for (size_t i = bigNumSize; i > 0; i--) {
+        size_t idx = i - 1;
+        BitsArrayMaxType val = BitsArrayGet(bigNum, (unsigned int)idx);
+
+        // В зависимости от N выбираем ширину вывода (количество символов на один элемент)
+        // N / 4 дает нам количество hex-символов в одном элементе
+        unsigned int hexCharsInElem = N / 4;
+
+        if (idx == bigNumSize - 1) {
+            // Для самого первого (старшего) элемента убираем лишние ведущие нули при выводе
+            printf("%llX", val);
+            printedAnything = 1;
+        } else {
+            // Для остальных элементов обязательно сохраняем ведущие нули внутри числа
+            switch (hexCharsInElem) {
+                case 1:  printf("%01llX", val); break;
+                case 2:  printf("%02llX", val); break;
+                case 4:  printf("%04llX", val); break;
+                case 8:  printf("%08llX", val); break;
+                case 16: printf("%016llX", val); break;
+                default: printf("%llX", val); break;
+            }
+        }
+    }
+    printf("\n");
 }
