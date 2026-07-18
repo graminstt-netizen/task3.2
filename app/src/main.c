@@ -1,5 +1,5 @@
 /*
-Точка входа в программу (интерфейс пользователя)
+main.c - точка входа в программу (интерфейс пользователя)
 
 Бабурин Дмитрий Сергеевич
 МК-101
@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Валидация входных строк на корректность hex-символов
+    // Проверка входных строк на корректность хекс символов
     if (!IsValidHexStr(argv[1]) || !IsValidHexStr(argv[2])) {
         fprintf(stderr, "Error: Input strings contain invalid hexadecimal characters.\n");
         return 1;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     printf("Second number: ");
     PrintBigNum(num2, size2);
 
-    // --- 1. Сложение ---
+    // 1. Сложение 
     size_t addResSize = (size1 > size2 ? size1 : size2) + 1;
     BigNum addRes = AllocBigNum(addResSize);
     AddBigNum(num1, num2, addRes, size1, size2);
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     printf("Sum:           ");
     PrintBigNum(addRes, addResSize);
 
-    // --- 2. Вычитание ---
+    // 2. Вычитание
     // Проверяем, не будет ли результат отрицательным
     if (CompareBigNum(num1, num2, size1, size2) < 0) {
         printf("Difference:    Error: Result would be negative (first number is smaller than second)\n");

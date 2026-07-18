@@ -1,5 +1,5 @@
 /*
-main.c - главный модуль программы. 
+lib_main.c - главный модуль программы. 
 
 Бабурин Дмитрий Сергеевич
 МК-101
@@ -95,7 +95,7 @@ void BitsArraySet(BitsArray bitsArray, unsigned int i, BitsArrayMaxType value) {
     }
 }
 
-// Вспомогательная функция перевода hex-символа в число
+// Вспомогательная функция перевода хекс символа в число
 static unsigned char HexCharToVal(char c) {
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -115,13 +115,13 @@ BigNum GetBigNumByStr(IN const char *str, OUT size_t *bigNumSize) {
         return AllocBigNum(1);
     }
 
-    // Каждый hex-символ — это 4 бита. Вычисляем количество N-битных элементов
+    // Каждый хекс символ это 4 бита. Вычисляем количество N-битных элементов
     size_t totalBits = len * 4;
     *bigNumSize = (totalBits + N - 1) / N;
 
     BigNum res = AllocBigNum(*bigNumSize);
 
-    // Читаем строку с конца (справа налево — от младших разрядов к старшим)
+    // Читаем строку с конца (справа налево: от младших разрядов к старшим)
     for (size_t i = 0; i < len; i++) {
         char c = str[len - 1 - i];
         unsigned char val = HexCharToVal(c);
@@ -155,7 +155,7 @@ void PrintBigNum(IN BigNum bigNum, size_t bigNumSize) {
         BitsArrayMaxType val = BitsArrayGet(bigNum, (unsigned int)idx);
 
         // В зависимости от N выбираем ширину вывода (количество символов на один элемент)
-        // N / 4 дает нам количество hex-символов в одном элементе
+        // N / 4 дает нам количество хекс символов в одном элементе
         unsigned int hexCharsInElem = N / 4;
 
         if (idx == bigNumSize - 1) {
