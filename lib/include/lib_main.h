@@ -59,4 +59,8 @@ void SubBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigN
 // Проверяет, является ли строка корректным шестнадцатеричным числом
 int IsValidHexStr(const char *str);
 
+// Сравнивает два больших числа. Возвращает 1, если num1 > num2, 
+// -1, если num1 < num2, и 0, если они равны
+int CompareBigNum(IN BigNum num1, IN BigNum num2, size_t size1, size_t size2);
+
 #endif // LIB_MAIN_H

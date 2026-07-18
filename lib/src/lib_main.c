@@ -292,3 +292,37 @@ int IsValidHexStr(const char *str) {
     }
     return 1;
 }
+
+int CompareBigNum(IN BigNum num1, IN BigNum num2, size_t size1, size_t size2) {
+    if (num1 == NULL || num2 == NULL) {
+        return 0;
+    }
+
+    // Определяем эффективную длину первого числа (без ведущих нулей)
+    size_t eff1 = size1;
+    while (eff1 > 1 && BitsArrayGet(num1, (unsigned int)(eff1 - 1)) == 0) {
+        eff1--;
+    }
+
+    // Определяем эффективную длину второго числа
+    size_t eff2 = size2;
+    while (eff2 > 1 && BitsArrayGet(num2, (unsigned int)(eff2 - 1)) == 0) {
+        eff2--;
+    }
+
+    // Сравниваем по длине
+    if (eff1 > eff2) return 1;
+    if (eff1 < eff2) return -1;
+
+    // Если эффективные длины равны, сравниваем элементы поразрядно от старших к младшим
+    for (size_t i = eff1; i > 0; i--) {
+        size_t idx = i - 1;
+        BitsArrayMaxType val1 = BitsArrayGet(num1, (unsigned int)idx);
+        BitsArrayMaxType val2 = BitsArrayGet(num2, (unsigned int)idx);
+        
+        if (val1 > val2) return 1;
+        if (val1 < val2) return -1;
+    }
+
+    return 0; // Числа полностью равны
+}

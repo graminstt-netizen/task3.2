@@ -1,5 +1,5 @@
 /*
-main.c - главный модуль программы. 
+Точка входа в программу (интерфейс пользователя)
 
 Бабурин Дмитрий Сергеевич
 МК-101
@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-	if (!IsValidHexStr(argv[1]) || !IsValidHexStr(argv[2])) {
-        // Ошибка пишется строго в stderr на английском языке
+    // Валидация входных строк на корректность hex-символов
+    if (!IsValidHexStr(argv[1]) || !IsValidHexStr(argv[2])) {
         fprintf(stderr, "Error: Input strings contain invalid hexadecimal characters.\n");
         return 1;
     }
@@ -45,22 +45,29 @@ int main(int argc, char *argv[]) {
     PrintBigNum(addRes, addResSize);
 
     // --- 2. Вычитание ---
-    size_t subResSize = size1; // Размер равен размеру первого (большего) числа
-    BigNum subRes = AllocBigNum(subResSize);
-    SubBigNum(num1, num2, subRes, size1, size2);
+    // Проверяем, не будет ли результат отрицательным
+    if (CompareBigNum(num1, num2, size1, size2) < 0) {
+        printf("Difference:    Error: Result would be negative (first number is smaller than second)\n");
+    } else {
+        size_t subResSize = size1;
+        BigNum subRes = AllocBigNum(subResSize);
+        SubBigNum(num1, num2, subRes, size1, size2);
 
-    // Убираем ведущие нули в разности для красивого вывода
-    while (subResSize > 1 && BitsArrayGet(subRes, (unsigned int)(subResSize - 1)) == 0) {
-        subResSize--;
+        // Убираем ведущие нули в разности для красивого вывода
+        while (subResSize > 1 && BitsArrayGet(subRes, (unsigned int)(subResSize - 1)) == 0) {
+            subResSize--;
+        }
+        printf("Difference:    ");
+        PrintBigNum(subRes, subResSize);
+        
+        // Освобождаем subRes только здесь, так как он создавался внутри ветки else
+        free(subRes);
     }
-    printf("Difference:    ");
-    PrintBigNum(subRes, subResSize);
 
-    // Очищаем всю выделенную память
+    // Очищаем оставшуюся глобальную выделенную память
     free(num1);
     free(num2);
     free(addRes);
-    free(subRes);
 
     return 0;
 }
