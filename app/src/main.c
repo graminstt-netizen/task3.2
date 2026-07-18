@@ -17,6 +17,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+	if (!IsValidHexStr(argv[1]) || !IsValidHexStr(argv[2])) {
+        // Ошибка пишется строго в stderr на английском языке
+        fprintf(stderr, "Error: Input strings contain invalid hexadecimal characters.\n");
+        return 1;
+    }
+
     size_t size1, size2;
     BigNum num1 = GetBigNumByStr(argv[1], &size1);
     BigNum num2 = GetBigNumByStr(argv[2], &size2);

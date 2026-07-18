@@ -277,3 +277,18 @@ void SubBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigN
         BitsArraySet(res, (unsigned int)i, diff);
     }
 }
+
+int IsValidHexStr(const char *str) {
+    if (str == NULL || strlen(str) == 0) {
+        return 0;
+    }
+    for (size_t i = 0; str[i] != '\0'; i++) {
+        char c = str[i];
+        if (!((c >= '0' && c <= '9') || 
+              (c >= 'A' && c <= 'F') || 
+              (c >= 'a' && c <= 'f'))) {
+            return 0;
+        }
+    }
+    return 1;
+}

@@ -56,4 +56,7 @@ void AddBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigN
 // Предполагается, что bigNum1 >= bigNum2
 void SubBigNum(IN BigNum bigNum1, IN BigNum bigNum2, OUT BigNum res, size_t bigNum1Size, size_t bigNum2Size);
 
+// Проверяет, является ли строка корректным шестнадцатеричным числом
+int IsValidHexStr(const char *str);
+
 #endif // LIB_MAIN_H
